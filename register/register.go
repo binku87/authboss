@@ -45,10 +45,6 @@ func (r *Register) Initialize(ab *authboss.Authboss) (err error) {
 		return errors.New("register: Need a RegisterStorer")
 	}
 
-	if r.templates, err = response.LoadTemplates(r.Authboss, r.Layout, r.ViewsPath, tplRegister); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -67,7 +63,11 @@ func (r *Register) Storage() authboss.StorageOptions {
 	}
 }
 
-func (reg *Register) registerHandler(ctx *authboss.Context, w http.ResponseWriter, r *http.Request) error {
+func (reg *Register) registerHandler(ctx *authboss.Context, w http.ResponseWriter, r *http.Request) (err error) {
+	reg.templates, err = response.LoadTemplates(w, r, reg.Authboss, tplRegister)
+	if err != nil {
+		return err
+	}
 	switch r.Method {
 	case "GET":
 		primaryID := r.FormValue("primaryID")

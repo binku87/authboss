@@ -26,11 +26,26 @@ var (
 // Templates is a map depicting the forms a template needs wrapped within the specified layout
 type Templates map[string]*template.Template
 
+func LoadTemplates(w http.ResponseWriter, r *http.Request, ab *authboss.Authboss, files ...string) (Templates, error) {
+	if ab.LayoutPath != "" {
+		tmpl, err := template.New(filepath.Base(ab.LayoutPath)).Funcs(ab.LayoutFuncMaker(w, r)).ParseFiles(ab.LayoutPath)
+		if err != nil {
+			return nil, err
+		}
+		ab.Layout = tmpl
+	}
+	templates, err := loadTemplates(ab, ab.Layout, ab.ViewsPath, files...)
+	if err != nil {
+		return nil, err
+	}
+	return templates, nil
+}
+
 // LoadTemplates parses all specified files located in fpath. Each template is wrapped
 // in a unique clone of layout.  All templates are expecting {{authboss}} handlebars
 // for parsing. It will check the override directory specified in the config, replacing any
 // templates as necessary.
-func LoadTemplates(ab *authboss.Authboss, layout *template.Template, fpath string, files ...string) (Templates, error) {
+func loadTemplates(ab *authboss.Authboss, layout *template.Template, fpath string, files ...string) (Templates, error) {
 	m := make(Templates)
 
 	funcMap := template.FuncMap{

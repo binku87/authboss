@@ -44,11 +44,6 @@ func (a *Auth) Initialize(ab *authboss.Authboss) (err error) {
 		return errors.New("auth: XSRFMaker must be defined")
 	}
 
-	a.templates, err = response.LoadTemplates(a.Authboss, a.Layout, a.ViewsPath, tplLogin)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -68,7 +63,11 @@ func (a *Auth) Storage() authboss.StorageOptions {
 	}
 }
 
-func (a *Auth) loginHandlerFunc(ctx *authboss.Context, w http.ResponseWriter, r *http.Request) error {
+func (a *Auth) loginHandlerFunc(ctx *authboss.Context, w http.ResponseWriter, r *http.Request) (err error) {
+	a.templates, err = response.LoadTemplates(w, r, a.Authboss, tplLogin)
+	if err != nil {
+		return err
+	}
 	switch r.Method {
 	case methodGET:
 		data := authboss.NewHTMLData(
