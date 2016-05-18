@@ -64,7 +64,7 @@ func (r *Register) Storage() authboss.StorageOptions {
 }
 
 func (reg *Register) registerHandler(ctx *authboss.Context, w http.ResponseWriter, r *http.Request) (err error) {
-	reg.templates, err = response.LoadTemplates(w, r, reg.Authboss, tplRegister)
+	reg.templates, err = response.LazyLoadTemplates(w, r, reg.Authboss, tplRegister)
 	if err != nil {
 		return err
 	}

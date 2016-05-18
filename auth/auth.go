@@ -64,7 +64,7 @@ func (a *Auth) Storage() authboss.StorageOptions {
 }
 
 func (a *Auth) loginHandlerFunc(ctx *authboss.Context, w http.ResponseWriter, r *http.Request) (err error) {
-	a.templates, err = response.LoadTemplates(w, r, a.Authboss, tplLogin)
+	a.templates, err = response.LazyLoadTemplates(w, r, a.Authboss, tplLogin)
 	if err != nil {
 		return err
 	}
