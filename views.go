@@ -8,10 +8,11 @@ import (
 // ViewDataMaker asks for an HTMLData object to assist with rendering.
 type ViewDataMaker func(http.ResponseWriter, *http.Request) HTMLData
 
+// ViewFuncMaker asks for an FuncMap to assist with rendering.
+type ViewFuncMaker func(http.ResponseWriter, *http.Request) template.FuncMap
+
 // HTMLData is used to render templates with.
 type HTMLData map[string]interface{}
-
-type ViewFuncMaker func(http.ResponseWriter, *http.Request) template.FuncMap
 
 // NewHTMLData creates HTMLData from key-value pairs. The input is a key-value
 // slice, where odd elements are keys, and the following even element is their value.

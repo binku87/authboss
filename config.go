@@ -26,9 +26,10 @@ type Config struct {
 	// authboss.StoreEmail, authboss.StoreUsername (StoreEmail is default)
 	PrimaryID string
 
-	LayoutPath string
 	// Layout that all authboss views will be inserted into.
 	Layout *template.Template
+	// LayoutPath will create Layout template with Request context
+	LayoutPath string
 	// LayoutHTMLEmail is for emails going out in HTML form, authbosses e-mail templates
 	// will be inserted into this layout.
 	LayoutHTMLEmail *template.Template
@@ -39,6 +40,9 @@ type Config struct {
 	// template data. It will be merged with the data being provided for the current
 	// view in order to render the templates.
 	LayoutDataMaker ViewDataMaker
+	// LayoutFuncMaker is a function that can provide authboss with the layout's
+	// template FuncMap. It will be merged with the FuncMap being provided for the current
+	// view in order to render the templates.
 	LayoutFuncMaker ViewFuncMaker
 
 	// OAuth2Providers lists all providers that can be used. See

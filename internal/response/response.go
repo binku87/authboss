@@ -26,6 +26,8 @@ var (
 // Templates is a map depicting the forms a template needs wrapped within the specified layout
 type Templates map[string]*template.Template
 
+// LazyLoadTemplates used to lazy load Layout template. It will create Layout template based on LayoutPath and pass Context
+// to the new Layout template, then will return templates will Layout template.
 func LazyLoadTemplates(w http.ResponseWriter, r *http.Request, ab *authboss.Authboss, files ...string) (Templates, error) {
 	if ab.LayoutPath != "" {
 		tmpl, err := template.New(filepath.Base(ab.LayoutPath)).Funcs(ab.LayoutFuncMaker(w, r)).ParseFiles(ab.LayoutPath)
