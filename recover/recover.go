@@ -87,11 +87,6 @@ func (r *Recover) Initialize(ab *authboss.Authboss) (err error) {
 		return errors.New("auth: XSRFMaker must be defined")
 	}
 
-	r.templates, err = response.LoadTemplates(r.Authboss, r.Layout, r.ViewsPath, tplRecover, tplRecoverComplete)
-	if err != nil {
-		return err
-	}
-
 	r.emailHTMLTemplates, err = response.LoadTemplates(r.Authboss, r.LayoutHTMLEmail, r.ViewsPath, tplInitHTMLEmail)
 	if err != nil {
 		return err
@@ -123,7 +118,11 @@ func (r *Recover) Storage() authboss.StorageOptions {
 	}
 }
 
-func (rec *Recover) startHandlerFunc(ctx *authboss.Context, w http.ResponseWriter, r *http.Request) error {
+func (rec *Recover) startHandlerFunc(ctx *authboss.Context, w http.ResponseWriter, r *http.Request) (err error) {
+	rec.templates, err = response.LazyLoadTemplates(w, r, rec.Authboss, tplRecover)
+	if err != nil {
+		return err
+	}
 	switch r.Method {
 	case methodGET:
 		data := authboss.NewHTMLData(
@@ -131,7 +130,6 @@ func (rec *Recover) startHandlerFunc(ctx *authboss.Context, w http.ResponseWrite
 			"primaryIDValue", "",
 			"confirmPrimaryIDValue", "",
 		)
-
 		return rec.templates.Render(ctx, w, r, tplRecover, data)
 	case methodPOST:
 		primaryID := r.FormValue(rec.PrimaryID)
@@ -219,6 +217,10 @@ func (r *Recover) sendRecoverEmail(ctx *authboss.Context, to, encodedToken strin
 }
 
 func (r *Recover) completeHandlerFunc(ctx *authboss.Context, w http.ResponseWriter, req *http.Request) (err error) {
+	r.templates, err = response.LazyLoadTemplates(w, req, r.Authboss, tplRecoverComplete)
+	if err != nil {
+		return err
+	}
 	switch req.Method {
 	case methodGET:
 		_, err = verifyToken(ctx, req)
